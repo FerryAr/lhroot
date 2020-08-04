@@ -1,17 +1,29 @@
 # Linux Chroot Installer
 
-Systemless chroot installer and chroot boot script
+Systemless Linux chroot installer and Linux chroot boot script
 
 ## Usage
 ``
 lhroot
 ``
+
 and follow the instructions
+
+After installation to boot into Linux Chroot use :
+``
+bootlinux
+``
+
+To unmount bind directory use :
+``
+killlinux
+``
 
 ## Available Distro
 - Alpine Linux
 - Debian
 - Ubuntu
+
 ...more distro added soon
 
 ## Credits
@@ -20,4 +32,5 @@ and follow the instructions
 
 ## License
 Licensed under GNU GPL v3
+
 The rootfs tarball is taken from AnLinux Resources [Repository](https://github.com/EXALAB/Anlinux-Resources)
