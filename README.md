@@ -2,6 +2,8 @@
 
 Systemless Linux chroot installer and Linux chroot boot script
 
+![Alpine-Linux-Android](https://i.ibb.co/HPpBCGn/alpine-linux.jpg)
+
 ## Usage
 ``
 lhroot
@@ -26,6 +28,12 @@ killlinux
 
 ...more distro added soon
 
+## Supported Architectures
+- arm
+- aarch64
+- x86
+- x64
+
 ## Credits
 - [mod-util](https://github.com/veez21/mod-util) by @veez21
 - Magisk by @topjohnwu
@@ -34,3 +42,8 @@ killlinux
 Licensed under GNU GPL v3
 
 The rootfs tarball is taken from AnLinux Resources [Repository](https://github.com/EXALAB/Anlinux-Resources)
+
+## Support
+- Open issue here
+- or visit [XDA Thread](https://forum.xda-developers.com/showthread.php?t=4142803)
+
