@@ -2,6 +2,13 @@
 
 Systemless Linux chroot installer and Linux chroot boot script
 
+## Require
+- Rooted with Magisk
+- Busybox installed
+- Coreutils for make_image
+- Mke2fs for make_image
+- This module
+
 ![Alpine-Linux-Android](https://i.ibb.co/HPpBCGn/alpine-linux.jpg)
 
 ## Usage
@@ -21,9 +28,21 @@ To unmount bind directory use :
 killlinux
 ``
 
+To make image use :
+``
+make_image <path to img> <img name.img> <size img in MB>
+``
+
+To mount image use : 
+``
+mount_image <path to img>
+``
+
 ## Available Distro
 - Alpine Linux
+- Arch Linux
 - Debian
+- Kali Linux
 - Ubuntu
 
 ...more distro added soon
@@ -47,3 +66,8 @@ The rootfs tarball is taken from AnLinux Resources [Repository](https://github.c
 - Open issue here
 - or visit [XDA Thread](https://forum.xda-developers.com/showthread.php?t=4142803)
 
+## Note
+- This module will turn SELinux from enforcing to permissive to ensure linux is working properly.
+- If you want to store your chroot in image file, make image file first using make_image then mount the image using mount_image script.
+- coreutils can be installed via @Zacktptg5 's [ccbins](https://github.com/Magisk-Modules-Repo/ccbins) module.
+- mke2fs can be installed via my [e2fsprogs module](https://github.com/FerryAr/e2fsprogs-arm), support for arm device only, other arch will be use busybox mke2fs applets, and limited 2GB image size. I'm still trying to cross compile to other arch, my host is based on armv7

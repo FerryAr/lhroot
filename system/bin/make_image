@@ -1,0 +1,43 @@
+#!/system/bin/sh
+
+_name=$(basename $0)
+ls /data >/dev/null 2>&1 || {
+    echo "the script needs to run as root!";
+    echo "type 'su' then '$_name'"; exit 1;
+}
+
+if ! command -v coreutils &> /dev/null
+then
+    echo "coreutils could not be found"
+    exit 1
+fi
+if ! command -v mke2fs &> /dev/null
+then
+    echo "mke2fs could not be found"
+    exit 1
+fi
+
+if [ -n "$1" ]; then
+    if [ -n "$2" ]; then
+        if [ -n "$3" ]; then
+            /system/bin/coreutils --coreutils-prog=dd if=/dev/zero of="$1"/"$2" bs=1M count=0 seek=$3
+            if [ -f "/system/bin/mke2fs" ]; then
+                /system/bin/mke2fs -t ext4 -F "$1"/"$2"
+            else
+                if ! command -v busybox &> /dev/null
+                then
+                    echo "install busybox first"
+                else 
+                    busybox mke2fs -t ext4 -F "$1"/"$2"
+                fi
+            fi
+        else
+            echo "usage : make_image <path to img> <img name.img> <img size in MB>"
+        fi
+    else
+        echo "usage : make_image <path to img> <img name.img> <img size in MB>"
+    fi
+else
+    echo "usage : make_image <path to img> <img name.img> <img size in MB>"
+fi
+

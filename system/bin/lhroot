@@ -49,9 +49,9 @@ alpine () {
     tmp="/data/local/tmp"
 	tarball="$tmp/alpine.tar.gz"
 	archurl=
-	if [ -d "$folder" ]; then
+	if [ -d "$folder/bin" ]; then
 	  first=1
-	  echo "skipping downloading"
+	  ech
 	fi
     if [ "$first" != 1 ]; then
         if [ ! -f $tarball ]; then
@@ -155,6 +155,107 @@ ubuntu () {
     echo "You can now launch Ubuntu with the bootlinux script"
 }
 
+arch_arm () {
+    folder="/data/arch"
+    if [ -d "$folder" ]; then
+        first=1
+        echo "skipping downloading"
+    fi
+    tmp="/data/local/tmp"
+    tarball="$tmp/arch.tar.gz"
+    if [ "$first != 1" ]; then
+        if [ ! -f $tarball ]; then
+            echo "Downloading Rootfs, please wait..."
+            archurl=
+            case $ARCH in
+                arm)
+                    archurl="armv7" ;;
+                arm64)
+                    archurl="aarch64" ;;
+                *)
+                    abort "unknow arch, maybe your arch is x64?"
+            esac
+                wget "https://os.archlinuxarm.org/os/ArchLinuxARM-${archurl}-latest.tar.gz" -qO $tarball & e_spinner
+        fi
+        mkdir -p "$folder"
+        cd "$folder"
+        echo "Decompressing Rootfs..."
+        tar xf ${tarball} 2> /dev/null||:
+        cd $HOME
+    fi
+    echo "Removing rootfs tarball for some space"
+    rm $tarball
+    echo "You can now launch launch Arch Linux with the bootlinux script"
+}
+
+arch_64 () {
+    folder="/data/arch"
+    if [ -d "$folder" ]; then
+        first=1
+        echo "skipping downloading"
+    fi
+    tmp="/data/local/tmp"
+    tarball="$tmp/arch.tar.gz"
+    if [ "$first" != 1 ]; then
+        if [ ! -f $tarball ]; then
+            echo "Downloading Rootfs, please wait..."
+            archurl=
+            case $ARCH in
+                x64)
+                    archurl="x86_64" ;;
+                *)
+                    abort "Unknown arch, maybe your arch is x86 or arm?" ;;
+            esac
+            wget "https://mirrors.evowise.com/archlinux/iso/2020.08.01/archlinux-bootstrap-2020.08.01-${archurl}.tar.gz" -qO $tarball & e_spinner
+        fi
+        mkdir -p "$folder"
+        cd "$folder"
+        echo "Decompressing Rootfs..."
+        tar xf ${tarball} 2> /dev/null||:
+        cd $HOME
+    fi
+    echo "Removing rootfs tarball for some space"
+    rm $tarball
+    echo "You can now launch Arch Linux with the bootlinux script"
+}
+
+kali () {
+    folder="/data/kali"
+    if [ -d "$folder" ]; then
+        first=1
+        echo "skipping downloading"
+    fi
+    tmp="/data/local/tmp"
+    tarball="$tmp/kali.tar.xz"
+    if [ "$first" != 1 ]; then
+        if [ ! -f $tarball ]; then
+            echo "Downloading Rootfs, please wait..."
+            archurl=
+            case $ARCH in
+                arm)
+                    archurl="armhf" ;;
+                arm64)
+                    archurl="arm64" ;;
+                x86)
+                    archurl="i386" ;;
+                x64)
+                    archurl="amd64" ;;
+                *)
+                    abort "unknown arch" ;;
+            esac
+            wget "https://raw.githubusercontent.com/EXALAB/AnLinux-Resources/master/Rootfs/Kali/${archurl}/kali-rootfs-${archurl}.tar.xz" -qO $tarball & e_spinner
+        fi
+        mkdir -p "$folder"
+        cd "$folder"
+        echo "Decompressing Rootfs..."
+        tar xfJ ${tarball} 2> /dev/null||:
+        cd $HOME
+    fi
+    echo "Removing rootfs tarball for some space"
+    rm $tarball
+    echo "You can now launch Kali with bootlinux script"
+}
+
 install_chroot () {
     clear
     while true; do
@@ -162,16 +263,22 @@ install_chroot () {
         title_div "Install which distro?"
         echo "$div"
         echo "0. Back"
-        echo "1. Alpine Linux"
-        echo "2. Debian"
-        echo "3. Ubuntu"
+        echo "1. Arch Linux ARM"
+        echo "2. Arch Linux x64"
+        echo "3. Alpine Linux"
+        echo "4. Debian"
+        echo "5. Kali Linux"
+        echo "6. Ubuntu"
         read -r choice?'--> '
         echo " "
         case $choice in
             0) break 3;;
-            1) alpine ;;
-            2) debian ;;
-            3) ubuntu ;;
+            1) arch_arm ;;
+            2) arch_64 ;;
+            3) alpine ;;
+            4) debian ;;
+            5) kali ;;
+            6) ubuntu ;;
         esac
     done
 }
@@ -181,6 +288,8 @@ remove_chroot () {
     alpine="/data/alpine"
     debian="/data/debian"
     ubuntu="/data/ubuntu"
+    arch="/data/arch"
+    kali="/data/kali"
     if [ -d "$alpine" ]; then
         installed=true
         lmount=$alpine
@@ -190,6 +299,12 @@ remove_chroot () {
     elif [ -d "$ubuntu" ]; then
         installed=true
         lmount=$ubuntu
+    elif [ -d "$arch" ]; then
+        installed=true
+        lmount=$arch
+    elif [ -d "$kali" ]; then
+        installed=true
+        lmount=$kali
     else
         :
     fi

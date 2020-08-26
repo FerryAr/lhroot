@@ -1,10 +1,6 @@
 #!/system/bin/sh
 
-if [ -x /system/xbin/busybox_nh ]; then
-	busybox=/system/xbin/busybox_nh
-elif [ -x /sbin/busybox_nh ]; then
-	busybox=/sbin/busybox_nh
-elif [ -x /system/xbin/busybox ]; then
+if [ -x /system/xbin/busybox ]; then
 	busybox=/system/xbin/busybox
 elif [ -x /data/local/bin/busybox ]; then
 	busybox=/data/local/bin/busybox
@@ -27,7 +23,7 @@ fi
 f_checkforroot(){
 	perm=$(id | $busybox cut -b 5)
 	if [ "$perm" != "0" ]; then
-		echo "ROOT NOT DETECTED! Type: Please install SuperSU or Magisk to fix it."
+		echo "ROOT NOT DETECTED! Type su first before executing this script"
 		exit 1
 	fi
 }
@@ -40,8 +36,13 @@ elif [ -d "/data/debian" ]; then
     mnt=/data/debian
 elif [ -d "/data/ubuntu" ]; then
     mnt=/data/ubuntu
+elif [ -d "/data/arch" ]; then
+    mnt=/data/arch
+elif [ -d "/data/kali" ]; then
+    mnt=/data/kali
 else
-    :
+    echo "No chroot installed";
+    exit 1
 fi
 ######### CHECK FOR INSTALL #########
 # There is a bug that will create the resolv.conf

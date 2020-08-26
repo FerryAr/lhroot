@@ -1,0 +1,33 @@
+#!/system/bin/sh
+
+_name=$(basename $0)
+ls /data >/dev/null 2>&1 || {
+    echo "the script needs to run as root!";
+    echo "type 'su' then '$_name'"; exit 1;
+} 
+
+SCRIPT_PATH=$(readlink -f $0)
+. ${SCRIPT_PATH%/*}/bootlinux_init
+
+if ! command -v busybox &> /dev/null
+then
+    echo "busybox could not be found"
+    exit 1
+fi
+
+if [ -n "$1" ]; then
+    busybox mknod /dev/loop78 b 7 100
+    busybox losetup /dev/loop78 "$1"
+    if [ -d "$mnt/bin" ]; then
+        killlinux
+        mkdir -p /data/mount
+        busybox mount -t ext4 -o suid /dev/loop78 /data/mount
+        busybox mv -f $mnt/* /data/mount
+        busybox umount /data/mount
+        busybox mount -t ext4 -o suid /dev/loop78 $mnt
+    else
+        busybox mount -t ext4 -o suid /dev/loop78 $mnt
+    fi
+else
+    echo "usage : mount_image <path to image>"
+fi
