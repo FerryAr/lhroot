@@ -70,4 +70,4 @@ The rootfs tarball is taken from AnLinux Resources [Repository](https://github.c
 - This module will turn SELinux from enforcing to permissive to ensure linux is working properly.
 - If you want to store your chroot in image file, make image file first using make_image then mount the image using mount_image script.
 - coreutils can be installed via @Zackptg5 's [ccbins](https://github.com/Magisk-Modules-Repo/ccbins) module.
-- mke2fs can be installed via my [e2fsprogs module](https://github.com/FerryAr/e2fsprogs-arm), support for arm device only, other arch will be use busybox mke2fs applets, and limited 2GB image size.
+- mke2fs can be installed via my [e2fsprogs module](https://github.com/FerryAr/e2fsprogs-arm), support for arm device only, other arch will be use busybox mke2fs applets,will use ext2 filesystem and limited 2GB image size.

@@ -28,7 +28,7 @@ if [ -n "$1" ]; then
                 then
                     echo "install busybox first"
                 else 
-                    busybox mke2fs -t ext4 -F "$1"/"$2"
+                    busybox mke2fs -F "$1"/"$2"
                 fi
             fi
         else
