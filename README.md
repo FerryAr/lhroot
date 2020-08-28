@@ -39,11 +39,11 @@ mount_image <path to img>
 ``
 
 ## Available Distro
-- Alpine Linux
-- Arch Linux
-- Debian
-- Kali Linux
-- Ubuntu
+- Alpine Linux, Installed on /data/alpine
+- Arch Linux, Installed on /data/arch
+- Debian, Installed on /data/debian
+- Kali Linux, Installed on /data/kali
+- Ubuntu, Installed on /data/ubuntu
 
 ...more distro added soon
 
