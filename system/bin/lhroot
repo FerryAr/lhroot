@@ -49,9 +49,9 @@ alpine () {
     tmp="/data/local/tmp"
 	tarball="$tmp/alpine.tar.gz"
 	archurl=
-	if [ -d "$folder/bin" ]; then
+	if [ -d "$folder" ]; then
 	  first=1
-	  ech
+      echo "skipping downloading"
 	fi
     if [ "$first" != 1 ]; then
         if [ ! -f $tarball ]; then

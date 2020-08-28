@@ -24,6 +24,9 @@ if [ -n "$1" ]; then
             busybox umount /data/mount
             busybox mount -t ext4 -o suid /dev/loop78 $2
         else
+            if [ ! -d "$2" ]; then
+                busybox mkdir -p "$2"
+            fi
             busybox mount -t ext4 -o suid /dev/loop78 $2
         fi
     else
