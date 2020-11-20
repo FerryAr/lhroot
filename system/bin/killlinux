@@ -1,10 +1,6 @@
 #!/system/bin/sh
 
-if [ -x /system/xbin/busybox_nh ]; then
-	busybox=/system/xbin/busybox_nh
-elif [ -x /sbin/busybox_nh ]; then
-	busybox=/sbin/busybox_nh
-elif [ -x /system/xbin/busybox ]; then
+if [ -x /system/xbin/busybox ]; then
 	busybox=/system/xbin/busybox
 elif [ -x /data/local/bin/busybox ]; then
 	busybox=/data/local/bin/busybox
@@ -25,8 +21,17 @@ elif [ -d "/data/debian" ]; then
    export mnt=/data/debian
 elif [ -d "/data/ubuntu" ]; then
    export mnt=/data/ubuntu
+elif [ -d "/data/kali" ]; then
+    export mnt=/data/kali
+elif [ -d "/data/parrot" ]; then
+    export mnt=/data/parrot
+elif [ -d "/data/fedora" ]; then
+    export mnt=/data/fedora
+elif [ -d "/data/arch" ]; then
+    export mnt=/data/arch
 else
-    :
+    echo "No chroot installed"
+    exit 1
 fi
 PRESERVED_PATH=$PATH
 export PATH=/usr/bin:/usr/sbin:/bin:/usr/local/bin:/usr/local/sbin:$PATH
@@ -62,3 +67,4 @@ $busybox umount $mnt/sdcard && echo "unmounted sdcard"
 $busybox umount $mnt/external_sd && echo "unmounted external_sd"
 
 export PATH=$PRESERVED_PATH
+

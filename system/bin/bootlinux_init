@@ -40,6 +40,10 @@ elif [ -d "/data/arch" ]; then
     mnt=/data/arch
 elif [ -d "/data/kali" ]; then
     mnt=/data/kali
+elif [ -d "/data/parrot" ]; then
+    mnt=/data/parrot
+elif [ -d "/data/fedora" ]; then
+    mnt=/data/fedora
 else
     echo "No chroot installed";
     exit 1

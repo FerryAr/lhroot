@@ -11,7 +11,7 @@ _name=$(basename $0)
 ls /data >/dev/null 2>&1 || { echo "$ID needs to run as root!"; echo "type 'su' then '$_name'"; exit 1; }
 
 # Magisk Mod Directory
-MOUNTPATH="/sbin/.magisk/modules"
+[ -d "/sbin/.magisk" ] && MOUNTPATH="/sbin/.magisk/modules" || MOUNTPATH="$(find /dev -mindepth 2 -maxdepth 2 -type d -name ".magisk")/modules"
 MODDIR="$MOUNTPATH/$ID"
 [ ! -d $MODDIR ] && { echo "Module not detected!"; exit 1; }
 
@@ -35,8 +35,8 @@ oldstdoutLOG=$MODDIR/logs/$ID-STDOUT-old.log
 
 # Start Logging verbosely
 mv -f $VERLOG $oldVERLOG 2>/dev/null; mv -f $LOG $oldLOG 2>/dev/null; mv -f $stdoutLOG $oldstdoutLOG 2>/dev/null
-exec 3>&1
-exec 1>$stdoutLOG
+# exec 3>&1
+# exec 1>$stdoutLOG
 set -x 2>$VERLOG
 
 # Main
@@ -175,7 +175,7 @@ arch_arm () {
                 *)
                     abort "unknow arch, maybe your arch is x64?"
             esac
-                wget "https://os.archlinuxarm.org/os/ArchLinuxARM-${archurl}-latest.tar.gz" -qO $tarball & e_spinner
+                wget "https://ca.us.mirror.archlinuxarm.org/os/ArchLinuxARM-${archurl}-latest.tar.gz" -qO $tarball & e_spinner
         fi
         mkdir -p "$folder"
         cd "$folder"
@@ -206,7 +206,7 @@ arch_64 () {
                 *)
                     abort "Unknown arch, maybe your arch is x86 or arm?" ;;
             esac
-            wget "https://mirrors.evowise.com/archlinux/iso/2020.08.01/archlinux-bootstrap-2020.08.01-${archurl}.tar.gz" -qO $tarball & e_spinner
+            wget "https://mirrors.evowise.com/archlinux/iso/2020.11.01/archlinux-bootstrap-2020.11.01-${archurl}.tar.gz" -qO $tarball & e_spinner
         fi
         mkdir -p "$folder"
         cd "$folder"
@@ -256,6 +256,72 @@ kali () {
     echo "You can now launch Kali with bootlinux script"
 }
 
+parrot () {
+    folder="/data/parrot"
+    if [ -d "$folder" ]; then
+        first=1
+        echo "skipping downloading"
+    fi
+    tmp="/data/local/tmp"
+    tarball="$tmp/parrot.tar.xz"
+    if [ "$first" != 1 ]; then
+        if [ ! -f $tarball ]; then
+            echo "Downloading Rootfs, please wait..."
+            case $ARCH in
+                x64)
+                    archurl="amd64" ;;
+                x86)
+                    archurl="i386" ;;
+                *)
+                    abort "unknown/unsupported arch" ;;
+            esac
+            wget "https://raw.githubusercontent.com/EXALAB/AnLinux-Resources/master/Rootfs/Parrot/${archurl}/parrot-rootfs-${archurl}.tar.xz" -qO $tarball & e_spinner
+        fi
+        mkdir -p "$folder"
+        cd "$folder"
+        echo "Decompressing Rootfs..."
+        tar xfJ ${tarball} 2> /dev/null||:
+        cd $HOME
+    fi
+    echo "Removing rootfs tarball for some space..."
+    rm $tarball
+    echo "You can now launch Parrot with bootlinux script"
+}
+
+fedora () {
+    folder="/data/fedora"
+    if [ -d "$folder" ]; then
+        first=1
+        echo "skipping downloading"
+    fi
+    tmp="/data/local/tmp"
+    tarball="$tmp/fedora.tar.xz"
+    if [ "$first" != 1 ]; then
+        if [ ! -f $tarball ]; then
+            echo "Downloading Rootfs, please wait..."
+            case $ARCH in
+                arm)
+                    archurl="armhf" ;;
+                arm64)
+                    archurl="arm64" ;;
+                x64)
+                    archurl="amd64" ;;
+                *)
+                    abort "unknown/unsupported arch" ;;
+            esac
+            wget "https://raw.githubusercontent.com/EXALAB/AnLinux-Resources/master/Rootfs/Fedora/${archurl}/fedora-rootfs-${archurl}.tar.xz" -qO $tarball & e_spinner
+        fi
+        mkdir -p "$folder"
+        cd "$folder"
+        echo "Decompressing Rootfs..."
+        tar xfJ ${tarball} 2> /dev/null||:
+        cd $HOME
+    fi
+    echo "Removing rootfs tarball for some space..."
+    rm $tarball
+    echo "You can now launch Fedora with bootlinux script"
+}
+
 install_chroot () {
     clear
     while true; do
@@ -267,8 +333,10 @@ install_chroot () {
         echo "2. Arch Linux x64"
         echo "3. Alpine Linux"
         echo "4. Debian"
-        echo "5. Kali Linux"
-        echo "6. Ubuntu"
+        echo "5. Fedora"
+        echo "6. Kali Linux"
+        echo "7. Parrot"
+        echo "8. Ubuntu"
         read -r choice?'--> '
         echo " "
         case $choice in
@@ -277,8 +345,10 @@ install_chroot () {
             2) arch_64 ;;
             3) alpine ;;
             4) debian ;;
-            5) kali ;;
-            6) ubuntu ;;
+            5) fedora ;;
+            6) kali ;;
+            7) parrot ;;
+            8) ubuntu ;;
         esac
     done
 }
@@ -290,6 +360,8 @@ remove_chroot () {
     ubuntu="/data/ubuntu"
     arch="/data/arch"
     kali="/data/kali"
+    parrot="/data/parrot"
+    fedora="/data/fedora"
     if [ -d "$alpine" ]; then
         installed=true
         lmount=$alpine
@@ -305,11 +377,23 @@ remove_chroot () {
     elif [ -d "$kali" ]; then
         installed=true
         lmount=$kali
+    elif [ -d "$parrot" ]; then
+        installed=true
+        lmount=$parrot
+    elif [ -d "$fedora" ]; then
+        installed=true
+        lmount=$fedora
     else
         :
     fi
     if [ $installed ]; then
         killlinux
+        echo "If dev is not successfully unmounted, please reboot your device or your device will be freezed."
+        sleep 1
+        echo "I give you 15 seconds to reboot your device if dev is not successfully unmounted."
+        sleep 1
+        echo "After reboot, you can rerun this script or remove chroot yourself with 'rm -rf /data/<chroot folder>' command"
+        sleep 15
         rm -rf $lmount
     else
         echo "No chroot installed"
@@ -343,4 +427,5 @@ while true; do
         q) exit 0 ;;
     esac
 done
+
 

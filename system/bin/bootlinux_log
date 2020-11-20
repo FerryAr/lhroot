@@ -1,10 +1,10 @@
 #!/system/bin/sh
 
 ######### Log function for bootlinux* script #########
-bklog() {
+bllog() {
     ## normal output to terminal
     echo "$1"
-    ## log it into logcat so that we can run "logcat | grep bklog" to see only the log messages from bootlinux script
-    log -t "bklog" "$(basename $0) -> $1"
+    ## log it into logcat so that we can run "logcat | grep bllog" to see only the log messages from bootlinux script
+    log -t "bllog" "$(basename $0) -> $1"
 }
 

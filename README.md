@@ -4,9 +4,9 @@ Systemless Linux chroot installer and Linux chroot boot script
 
 ## Require
 - Rooted with Magisk
-- Busybox installed
-- Coreutils for make_image
-- Mke2fs for make_image
+- busybox installed
+- coreutils for make_image
+- mke2fs for make_image
 - This module
 
 ![Alpine-Linux-Android](https://i.ibb.co/HPpBCGn/alpine-linux.jpg)
@@ -42,7 +42,9 @@ mount_image <path to img> <path to linux directory>
 - Alpine Linux, Installed on /data/alpine
 - Arch Linux, Installed on /data/arch
 - Debian, Installed on /data/debian
+- Fedora, Installed on /data/fedora
 - Kali Linux, Installed on /data/kali
+- Parrot, Installed on /data/parrot
 - Ubuntu, Installed on /data/ubuntu
 
 ...more distro added soon
