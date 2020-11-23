@@ -423,7 +423,7 @@ while true; do
     echo " "
     case $choice in
         1) install_chroot ;;
-        2) remove_chrooot ;;
+        2) remove_chroot ;;
         q) exit 0 ;;
     esac
 done
