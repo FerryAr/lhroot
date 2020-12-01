@@ -55,6 +55,10 @@ mount_image <path to img> <path to linux directory>
 - x86
 - x64
 
+## TODO
+- [  ] Built in audio support
+- [  ] Include all dependancy in this module
+
 ## Credits
 - [mod-util](https://github.com/veez21/mod-util) by @veez21
 - Magisk by @topjohnwu
@@ -69,7 +73,6 @@ The rootfs tarball is taken from AnLinux Resources [Repository](https://github.c
 - or visit [XDA Thread](https://forum.xda-developers.com/showthread.php?t=4142803)
 
 ## Note
-- This module will turn SELinux from enforcing to permissive to ensure linux is working properly.
 - If you want to store your chroot in image file, make image file first using make_image then mount the image using mount_image script.
 - coreutils can be installed via @Zackptg5 's [ccbins](https://github.com/Magisk-Modules-Repo/ccbins) module.
 - mke2fs can be installed via my [e2fsprogs module](https://github.com/FerryAr/e2fsprogs-arm), support for arm device only, other arch will be use busybox mke2fs applets,will use ext2 filesystem and limited 2GB image size.

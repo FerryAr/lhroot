@@ -1,6 +1,6 @@
 id=lhroot
 name=Linux Chroot Installer
-version=v1.7
-versionCode=2
+version=v1.8
+versionCode=1
 author=FerryAr
 description=Systemless linux chroot installer and chroot boot script

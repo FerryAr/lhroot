@@ -403,12 +403,7 @@ remove_chroot () {
 mod_head
 echo " "
 
-if test_connection; then
-    online=true
-else
-    online=false
-    abort "No internet connection!"
-fi
+test_connection || abort "This module need requires internet for installs!"
 
 while true; do
     echo "$div"
