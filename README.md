@@ -56,8 +56,8 @@ mount_image <path to img> <path to linux directory>
 - x64
 
 ## TODO
-- [  ] Built in audio support
-- [  ] Include all dependancy in this module
+- [ ] Built in Audio support
+- [ ] Cross compile all dependancies
 
 ## Credits
 - [mod-util](https://github.com/veez21/mod-util) by @veez21
