@@ -9,9 +9,10 @@ Systemless Linux chroot installer and Linux chroot boot script
 - mke2fs for make_image
 - This module
 
-![Alpine-Linux-Android](https://i.ibb.co/HPpBCGn/alpine-linux.jpg)
+![Alpine-Linux-Android](https://i.ibb.co/MhXXQgv/alpine-linux-lhroot.png)
 
 ## Usage
+
 ``
 lhroot
 ``
@@ -19,21 +20,25 @@ lhroot
 and follow the instructions
 
 After installation to boot into Linux Chroot use :
+
 ``
 bootlinux
 ``
 
 To unmount bind directory use :
+
 ``
 killlinux
 ``
 
 To make image use :
+
 ``
 make_image <path to img> <img name.img> <size img in MB>
 ``
 
 To mount image use : 
+
 ``
 mount_image <path to img> <path to linux directory>
 ``

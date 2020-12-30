@@ -134,8 +134,6 @@ mount_external_storage() {
 
 mount_linux_chroot() {
 
-    $busybox mount -t ext4 -o loop /sdcard/linux-chroot.img $mnt
-
     mkdir -p $mnt/dev
     mkdir -p $mnt/dev/shm
     mkdir -p $mnt/proc
@@ -180,7 +178,7 @@ mount_linux_chroot() {
     ######### MOUNT DEV ########
     if [ ! "$(mountpoint $mnt/dev 2> /dev/null | grep 'is a')" ]; then
         [ ! -d $mnt/dev ] && mkdir -p $mnt/dev
-        $busybox mount -o bind /dev $mnt/dev && bklog "[+] mounted /dev"
+        $busybox mount -t devtmpfs /dev $mnt/dev && bklog "[+] mounted /dev"
     fi
 
     ######### MOUNT DEV PTS ########
@@ -245,7 +243,7 @@ mount_linux_chroot() {
 
     # NETWORK SETTINGS #
     $busybox sysctl -w net.ipv4.ip_forward=1
-    echo "127.0.0.1		 localhost alpine" > $mnt/etc/hosts
+    echo "127.0.0.1		 localhost linux" > $mnt/etc/hosts
     echo "::1				 localhost ip6-localhost ip6-loopback" >> $mnt/etc/hosts
     echo "linux" > $mnt/proc/sys/kernel/hostname
     echo "The Linux chroot has been started."
