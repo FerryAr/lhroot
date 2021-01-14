@@ -2,27 +2,18 @@
 
 if [ -x /system/xbin/busybox ]; then
 	busybox=/system/xbin/busybox
-elif [ -x /data/local/bin/busybox ]; then
-	busybox=/data/local/bin/busybox
 elif [ -x /system/bin/busybox ]; then
 	busybox=/system/bin/busybox
-elif [ -x /su/bin/busybox ]; then
-	busybox=/su/bin/busybox
 else
 	echo "Busybox not found!  Install it, dummy!"
 	log "Busybox not found!  Install it, dummy!"
 	exit 1
 fi
 
-
-## No longer needed as SELinux is set to permissive mode via "service.sh" init script.
-#su -c 'setenforce 0'
-
-
 ######### CHECK FOR ROOT #########
 f_checkforroot(){
 	perm=$(id | $busybox cut -b 5)
-	if [ "$perm" != "0" ]; then
+    if [ "$perm" != "0" ]; then
 		echo "ROOT NOT DETECTED! Type su first before executing this script"
 		exit 1
 	fi
@@ -135,13 +126,11 @@ mount_external_storage() {
 mount_linux_chroot() {
 
     mkdir -p $mnt/dev
-    mkdir -p $mnt/dev/shm
     mkdir -p $mnt/proc
     mkdir -p $mnt/sys
     mkdir -p $mnt/system
     mkdir -p $mnt/sdcard
     mkdir -p $mnt/external_sd
-
     ######### SET TUN ########
     mkdir -p /dev/net
     rm -f /dev/net/tun
@@ -178,40 +167,42 @@ mount_linux_chroot() {
     ######### MOUNT DEV ########
     if [ ! "$(mountpoint $mnt/dev 2> /dev/null | grep 'is a')" ]; then
         [ ! -d $mnt/dev ] && mkdir -p $mnt/dev
-        $busybox mount -t devtmpfs /dev $mnt/dev && bklog "[+] mounted /dev"
+        $busybox mount -t devtmpfs /dev $mnt/dev && bllog "[+] mounted /dev"
     fi
 
     ######### MOUNT DEV PTS ########
     if [ ! "$(mountpoint $mnt/dev/pts 2> /dev/null | grep 'is a')" ]; then
-        $busybox mount -t devpts devpts $mnt/dev/pts && bklog "[+] mounted /dev/pts"
+        [ ! -d $mnt/dev/pts ] && mkdir -p $mnt/dev/pts
+        $busybox mount -t devpts devpts $mnt/dev/pts && bllog "[+] mounted /dev/pts"
     fi
     
     ######### MOUNT DEV SHM ########
     if [ ! "$(mountpoint $mnt/dev/shm 2> /dev/null | grep 'is a')" ]; then
-        $busybox mount -t tmpfs tmpfs $mnt/dev/shm && bklog "[+] mounted /dev/shm"
+        [ ! -d $mnt/dev/shm ] && mkdir -p $mnt/dev/shm
+        $busybox mount -t tmpfs tmpfs $mnt/dev/shm && bllog "[+] mounted /dev/shm"
     fi
 
     ######### MOUNT PROC ########
     if [ ! "$(mountpoint $mnt/proc 2> /dev/null | grep 'is a')" ]; then
         [ ! -d $mnt/proc ] && mkdir -p $mnt/proc
-        $busybox mount -t proc proc $mnt/proc && bklog "[+] mounted /proc"
+        $busybox mount -t proc proc $mnt/proc && bllog "[+] mounted /proc"
     fi
 
   	######### MOUNT SYS ########
     if [ ! "$(mountpoint $mnt/sys 2> /dev/null | grep 'is a')" ]; then
         [ ! -d $mnt/sys ] && mkdir -p $mnt/sys
-        $busybox mount -t sysfs sys $mnt/sys && bklog "[+] mounted /sys"
+        $busybox mount -t sysfs sys $mnt/sys && bllog "[+] mounted /sys"
     fi
 
     ######### MOUNT SYSTEM ########
     if [ ! "$(mountpoint $mnt/system 2> /dev/null | grep 'is a')" ]; then
         [ ! -d $mnt/system ] && mkdir -p $mnt/system
-        $busybox mount -r -o bind /system $mnt/system && bklog "[+] mounted /system"
+        $busybox mount -r -o bind /system $mnt/system && bllog "[+] mounted /system"
     fi
 
     #enable depmod/modprobe support in rootfs
     if [ ! "$(mountpoint $mnt/lib/modules 2> /dev/null | grep 'is a')" ]; then
-       $busybox mount -r -o bind /system/lib/modules $mnt/lib/modules && bklog "[+] mounted /lib/modules"
+       $busybox mount -r -o bind /system/lib/modules $mnt/lib/modules && bllog "[+] mounted /lib/modules"
     fi
 
     ######### MOUNT INTERNAL | EXTERNAL SDCARD | USBDISK ########
@@ -256,24 +247,13 @@ mount_linux_chroot() {
 }
 
 ############ STARTING ############
-## First create the chroot directory: $mnt
-if [ ! -d "$mnt" ]; then
-    mkdir -p $mnt
-fi
 
-## then check if the linux chroot image is already mounted
+echo "Mounting Linux Chroot..."
+mount_linux_chroot
 
-if [ ! "$($busybox mountpoint $mnt | grep 'is a')" ]; then
-    echo "Mounting linux chroot..."
-    mount_linux_chroot
+if [ -d "$mnt/usr" ]; then
+    echo "The Linux chroot should be already running!"
 else
-    echo "Linux chroot is already mounted."
-
-    if [ -d "$mnt/usr" ]; then
-        echo "The Linux chroot should be already running!"
-    else
-        echo "But missing a required folder. Something isn't right here...Unmounting linux chroot.."
-        $busybox umount $mnt
-        exit 1
-    fi
+    echo "Missing required folder, exit now...."
+    exit 1
 fi

@@ -2,18 +2,13 @@
 
 if [ -x /system/xbin/busybox ]; then
 	busybox=/system/xbin/busybox
-elif [ -x /data/local/bin/busybox ]; then
-	busybox=/data/local/bin/busybox
 elif [ -x /system/bin/busybox ]; then
 	busybox=/system/bin/busybox
-elif [ -x /su/bin/busybox ]; then
-	busybox=/su/bin/busybox
 else
 	echo "Busybox not found!  Install it, dummy!"
 	log "Busybox not found!  Install it, dummy!"
 	exit
 fi
-
 export bin=/system/bin
 if [ -d "/data/alpine" ]; then
    export mnt=/data/alpine
@@ -33,6 +28,24 @@ else
     echo "No chroot installed"
     exit 1
 fi
+
+
+########## Kill all running linux services and processes ##########
+kill_pids() {
+    bllog "[!] Killing all running linux services .."
+    local lsof_full=$($busybox lsof | awk '{print $1}' | grep -c '^lsof')
+    if [ "${lsof_full}" -eq 0 ]; then
+        local pids=$($busybox lsof | grep "$mnt" | awk '{print $1}' | uniq)
+    else
+        local pids=$($busybox lsof | grep "$mnt" | awk '{print $2}' | uniq)
+    fi
+    if [ -n "${pids}" ]; then
+        kill -9 ${pids} 2> /dev/null
+        return $?
+    fi
+    return 0
+}
+
 PRESERVED_PATH=$PATH
 export PATH=/usr/bin:/usr/sbin:/bin:/usr/local/bin:/usr/local/sbin:$PATH
 export TERM=linux
@@ -54,6 +67,9 @@ $busybox chroot $mnt /etc/init.d/postgresql stop
 
 echo "Shutting down Apache2"
 $busybox chroot $mnt /etc/init.d/apache2 stop
+
+echo "Kill all Linux services and processes"
+kill_pids
 
 # unmount everything
 

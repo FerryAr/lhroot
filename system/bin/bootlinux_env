@@ -1,6 +1,6 @@
 #!/system/bin/sh
 
-######### IMPORT BOOTKALI INITIALIZATION #########
+######### IMPORT BOOTLINUX INITIALIZATION #########
 SCRIPT_PATH=$(readlink -f $0)
 . ${SCRIPT_PATH%/*}/bootlinux_log
 . ${SCRIPT_PATH%/*}/bootlinux_init

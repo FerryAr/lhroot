@@ -68,7 +68,7 @@ alpine () {
                 *)
                     abort "unknown arch" ;;
             esac
-            wget "https://dl-cdn.alpinelinux.org/alpine/v3.12/releases/${archurl}/alpine-minirootfs-3.12.3-${archurl}.tar.gz" -qO $tarball & e_spinner
+            wget "https://dl-cdn.alpinelinux.org/alpine/v3.13/releases/${archurl}/alpine-minirootfs-3.12.3-${archurl}.tar.gz" -qO $tarball & e_spinner
         fi
         mkdir -p "$folder"
         cd "$folder"
@@ -206,7 +206,7 @@ arch_64 () {
                 *)
                     abort "Unknown arch, maybe your arch is x86 or arm?" ;;
             esac
-            wget "https://mirrors.evowise.com/archlinux/iso/2020.11.01/archlinux-bootstrap-2020.11.01-${archurl}.tar.gz" -qO $tarball & e_spinner
+            wget "https://mirrors.evowise.com/archlinux/iso/2021.01.01/archlinux-bootstrap-2020.01.01-${archurl}.tar.gz" -qO $tarball & e_spinner
         fi
         mkdir -p "$folder"
         cd "$folder"
@@ -403,7 +403,7 @@ remove_chroot () {
 mod_head
 echo " "
 
-test_connection || abort "This module need requires internet for installs!"
+test_connection || abort "This module requires internet for running!"
 
 while true; do
     echo "$div"
