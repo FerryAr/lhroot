@@ -13,35 +13,35 @@ Systemless Linux chroot installer and Linux chroot boot script
 
 ## Usage
 
-``
+```console
 lhroot
-``
+```
 
 and follow the instructions
 
 After installation to boot into Linux Chroot use :
 
-``
+```console
 bootlinux
-``
+```
 
 To unmount bind directory use :
 
-``
+```console
 killlinux
-``
+```
 
 To make image use :
 
-``
+```console
 make_image <path to img> <img name.img> <size img in MB>
-``
+```
 
 To mount image use : 
 
-``
+```console
 mount_image <path to img> <path to linux directory>
-``
+```
 
 ## Available Distro
 - Alpine Linux, Installed on /data/alpine
