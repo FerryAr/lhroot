@@ -68,7 +68,7 @@ alpine () {
                 *)
                     abort "unknown arch" ;;
             esac
-            wget "https://dl-cdn.alpinelinux.org/alpine/v3.13/releases/${archurl}/alpine-minirootfs-3.12.3-${archurl}.tar.gz" -qO $tarball & e_spinner
+            wget "https://dl-cdn.alpinelinux.org/alpine/v3.13/releases/${archurl}/alpine-minirootfs-3.13.0-${archurl}.tar.gz" -qO $tarball & e_spinner
         fi
         mkdir -p "$folder"
         cd "$folder"
