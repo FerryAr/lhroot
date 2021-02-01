@@ -11,9 +11,7 @@ Systemless Linux chroot installer and Linux chroot boot script
 
 ![Alpine-Linux-Android](https://i.ibb.co/MhXXQgv/alpine-linux-lhroot.png)
 
-| ![alpine-openbox](https://i.ibb.co/r3Z1trX/alpine-openbox.png) | 
-|:--:| 
-| *My Alpine Linux desktop in Android* |
+![alpine-openbox](https://i.ibb.co/r3Z1trX/alpine-openbox.png)
 
 ## Usage
 
