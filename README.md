@@ -1,3 +1,5 @@
+### Need contributors at [lhroot-repo](https://github.com/FerryAr/lhroot-repo) to maintain rootfs tarball for other arch, as I just have armv7 phone.
+
 # Linux Chroot Installer
 
 Systemless Linux chroot installer and Linux chroot boot script
@@ -10,8 +12,6 @@ Systemless Linux chroot installer and Linux chroot boot script
 - This module
 
 ![Alpine-Linux-Android](https://i.ibb.co/MhXXQgv/alpine-linux-lhroot.png)
-
-![alpine-openbox](https://i.ibb.co/r3Z1trX/alpine-openbox.png)
 
 ## Usage
 
@@ -63,6 +63,7 @@ mount_image <path to img> <path to linux directory>
 - x64
 
 ## TODO
+- [ ] Migrate all file used in lhroot to my repo (WIP)
 - [ ] Built in Audio support
 - [ ] Cross compile all dependancies
 
