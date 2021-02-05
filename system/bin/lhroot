@@ -309,7 +309,7 @@ fedora () {
                 *)
                     abort "unknown/unsupported arch" ;;
             esac
-            wget "https://raw.githubusercontent.com/EXALAB/AnLinux-Resources/master/Rootfs/Fedora/${archurl}/fedora-rootfs-${archurl}.tar.xz" -qO $tarball & e_spinner
+            wget "https://raw.githubusercontent.com/FerryAr/lhroot-repo/main/Rootfs/Fedora/${archurl}/fedora-rootfs-${archurl}.tar.xz" -qO $tarball & e_spinner
         fi
         mkdir -p "$folder"
         cd "$folder"
