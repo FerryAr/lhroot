@@ -206,7 +206,7 @@ arch_64 () {
                 *)
                     abort "Unknown arch, maybe your arch is x86 or arm?" ;;
             esac
-            wget "https://mirrors.evowise.com/archlinux/iso/2021.07.01/archlinux-bootstrap-2021.07.01-${archurl}.tar.gz" -qO $tarball & e_spinner
+            wget "https://mirrors.edge.kernel.org/archlinux/iso/2021.08.01/archlinux-bootstrap-2021.08.01-${archurl}.tar.gz" -qO $tarball & e_spinner
         fi
         mkdir -p "$folder"
         cd "$folder"
