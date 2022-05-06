@@ -1,17 +1,15 @@
-### Need contributors at [lhroot-repo](https://github.com/FerryAr/lhroot-repo) to maintain rootfs tarball for other arch, as I just have armv7 phone.
-
 # Linux Chroot Installer
 
 Systemless Linux chroot installer and Linux chroot boot script
 
-## Require
+## Requirements
 - Rooted with Magisk
 - busybox installed
 - coreutils for make_image
 - mke2fs for make_image
 - This module
 
-![Alpine-Linux-Android](https://i.ibb.co/MhXXQgv/alpine-linux-lhroot.png)
+![Manjaro-Linux-Android](https://i.ibb.co/gdpw8QG/lhroot.png)
 
 ## Usage
 
