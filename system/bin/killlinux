@@ -24,6 +24,8 @@ elif [ -d "/data/fedora" ]; then
     export mnt=/data/fedora
 elif [ -d "/data/arch" ]; then
     export mnt=/data/arch
+elif [ -d "/data/manjaro" ]; then
+    export mnt=/data/manjaro
 else
     echo "No chroot installed"
     exit 1

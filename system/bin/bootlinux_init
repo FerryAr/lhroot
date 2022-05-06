@@ -35,6 +35,8 @@ elif [ -d "/data/parrot" ]; then
     mnt=/data/parrot
 elif [ -d "/data/fedora" ]; then
     mnt=/data/fedora
+elif [ -d "/data/manjaro" ]; then
+    mnt=/data/manjaro
 else
     echo "No chroot installed";
     exit 1
@@ -131,6 +133,19 @@ mount_linux_chroot() {
     mkdir -p $mnt/system
     mkdir -p $mnt/sdcard
     mkdir -p $mnt/external_sd
+
+    mkdir -p $mnt/apex
+    cd "/apex"
+    for f in *; do
+        mkdir -p "$mnt/apex/$f"
+    done
+    cd - 2>&1 > /dev/null
+
+    mkdir -p $mnt/data/data
+    mkdir -p $mnt/data/dalvik-cache
+    mkdir -p $mnt/vendor
+    mkdir -p $mnt/odm
+    mkdir -p $mnt/linkerconfig
     ######### SET TUN ########
     mkdir -p /dev/net
     rm -f /dev/net/tun
@@ -141,21 +156,14 @@ mount_linux_chroot() {
     # ln -s /dev/tun /dev/net/tun 2> /dev/null
 
     ######### SET DNS ########
-    > $mnt/etc/resolv.conf # empty dns entries
 
-    for i in 1 2 3 4; do
-    	if [ -z "$(getprop net.dns${i})" ]; then
-    		# we go through 1-4 dns servers and break out of loop on empty
-    		break
-    	else
-    		# add local/device dns server first
-    		echo "nameserver $(getprop net.dns${i})" >> $mnt/etc/resolv.conf
-    	fi
-    done
+    # setup
+    rm $mnt/etc/resolv.conf
+    touch $mnt/etc/resolv.conf
 
-    # lastly add two default dns entries
-    echo "nameserver 208.67.222.222" >> $mnt/etc/resolv.conf
-    echo "nameserver 208.67.220.220" >> $mnt/etc/resolv.conf
+    # add two public dns entries
+    echo "nameserver 1.1.1.1" >> $mnt/etc/resolv.conf
+    echo "nameserver 1.0.0.1" >> $mnt/etc/resolv.conf
     chmod 644 $mnt/etc/resolv.conf
 
     ######### MOUNTING FILESYSTEM IN CHROOT #########
@@ -167,7 +175,7 @@ mount_linux_chroot() {
     ######### MOUNT DEV ########
     if [ ! "$(mountpoint $mnt/dev 2> /dev/null | grep 'is a')" ]; then
         [ ! -d $mnt/dev ] && mkdir -p $mnt/dev
-        $busybox mount -t devtmpfs /dev $mnt/dev && bllog "[+] mounted /dev"
+        $busybox mount --bind /dev $mnt/dev && bllog "[+] mounted /dev"
     fi
 
     ######### MOUNT DEV PTS ########
@@ -194,6 +202,35 @@ mount_linux_chroot() {
         $busybox mount -t sysfs sys $mnt/sys && bllog "[+] mounted /sys"
     fi
 
+    # Android
+
+    ######### MOUNT APEX #######
+    grep "$mnt/apex" /proc/mounts -q 2>&1 > /dev/null
+    if [[ "$?" -ne 0 ]]; then
+        cd /apex
+        for f in *; do
+            $busybox mount --rbind "/apex/$f" "$mnt/apex/$f" && bllog "[+] mounted /apex/$f"
+        done
+    fi
+
+    ####### MOUNT DATA ########
+    if [ ! "$(mountpoint $mnt/data/data 2> /dev/null | grep 'is a')" ]; then
+        [ ! -d $mnt/data/data ] && mkdir -p $mnt/data/data
+        $busybox mount -o bind /data/data $mnt/data/data && bllog "[+] mounted /data/data"
+    fi
+
+    ####### MOUNT DALVIK-CACHE #######
+    if [ ! "$(mountpoint $mnt/data/dalvik-cache 2> /dev/null | grep 'is a')" ]; then
+        [ ! -d $mnt/data/dalvik-cache ] && mkdir -p $mnt/data/dalvik-cache
+        $busybox mount -o bind /data/data $mnt/data/dalvik-cache && bllog "[+] mounted /data/dalvik-cache"
+    fi
+
+    ######## MOUNT LINKERCONFIG ########
+    if [ ! "$(mountpoint $mnt/linkerconfig 2> /dev/null | grep 'is a')" ]; then
+        [ ! -d $mnt/linkerconfig ] && mkdir -p $mnt/linkerconfig
+        $busybox mount -o bind /linkerconfig $mnt/linkerconfig && bllog "[+] mounted /linkerconfig"
+    fi
+
     ######### MOUNT SYSTEM ########
     if [ ! "$(mountpoint $mnt/system 2> /dev/null | grep 'is a')" ]; then
         [ ! -d $mnt/system ] && mkdir -p $mnt/system
@@ -215,19 +252,24 @@ mount_linux_chroot() {
     ######### SET 250MB TO ALLOW POSTGRESQL #########
     $busybox sysctl -w kernel.shmmax=268435456
 
-    ######### SET DNS ########
-    > $mnt/etc/resolv.conf # empty dns entries
-    for i in 1 2 3 4; do
-        if [ -z "$(getprop net.dns${i})" ]; then
-        # we go through 1-4 dns servers and break out of loop on empty
-            break
-        else
-        # add local/device dns server first
-            echo "nameserver $(getprop net.dns${i})" >> $mnt/etc/resolv.conf
-        fi
-    done
-
     $busybox chmod 666 /dev/null
+
+    sed "/export ANDROID_DATA=\"\/data\"/d" -i "$mnt/etc/profile"
+    echo "export ANDROID_DATA=\"/data\"" >> "$mnt/etc/profile"
+    sed "/export ANDROID_ROOT=\"\/system\"/d" -i "$mnt/etc/profile"
+    echo "export ANDROID_ROOT=\"/system\"" >> "$mnt/etc/profile"
+    sed "/export ANDROID_ART_ROOT=\"\/apex\/com.android.art\"/d" -i "$mnt/etc/profile"
+    echo "export ANDROID_ART_ROOT=\"/apex/com.android.art\"" >> "$mnt/etc/profile"
+    sed "/export ANDROID_RUNTIME_ROOT=\"\/apex\/com.android.runtime\"/d" -i "$mnt/etc/profile"
+    echo "export ANDROID_RUNTIME_ROOT=\"/apex/com.android.runtime\"" >> "$mnt/etc/profile"
+    sed "/export ANDROID_I18N_ROOT=\"\/apex\/com.android.i18n\"/d" -i "$mnt/etc/profile"
+    echo "export ANDROID_I18N_ROOT=\"/apex/com.android.i18n\"" >> "$mnt/etc/profile"
+    sed "/export ANDROID_TZDATA_ROOT=\"\/apex\/com.android.tzdata\"/d" -i "$mnt/etc/profile"
+    echo "export ANDROID_TZDATA_ROOT=\"/apex/com.android.tzdata\"" >> "$mnt/etc/profile"
+    sed "/export BOOTCLASSPATH=\"/d" -i "$mnt/etc/profile"
+    echo "export BOOTCLASSPATH=\"/apex/com.android.art/javalib/core-oj.jar:/apex/com.android.art/javalib/core-libart.jar:/apex/com.android.art/javalib/okhttp.jar:/apex/com.android.art/javalib/bouncycastle.jar:/apex/com.android.art/javalib/apache-xml.jar:/system/framework/framework.jar:/system/framework/framework-graphics.jar:/system/framework/ext.jar:/system/framework/telephony-common.jar:/system/framework/voip-common.jar:/system/framework/ims-common.jar:/apex/com.android.i18n/javalib/core-icu4j.jar:/system/framework/telephony-ext.jar:/apex/com.android.appsearch/javalib/framework-appsearch.jar:/apex/com.android.conscrypt/javalib/conscrypt.jar:/apex/com.android.ipsec/javalib/android.net.ipsec.ike.jar:/apex/com.android.media/javalib/updatable-media.jar:/apex/com.android.mediaprovider/javalib/framework-mediaprovider.jar:/apex/com.android.os.statsd/javalib/framework-statsd.jar:/apex/com.android.permission/javalib/framework-permission.jar:/apex/com.android.permission/javalib/framework-permission-s.jar:/apex/com.android.scheduling/javalib/framework-scheduling.jar:/apex/com.android.sdkext/javalib/framework-sdkextensions.jar:/apex/com.android.tethering/javalib/framework-connectivity.jar:/apex/com.android.tethering/javalib/framework-tethering.jar:/apex/com.android.wifi/javalib/framework-wifi.jar\"" >> "$mnt/etc/profile"
+    sed "/export DEX2OATBOOTCLASSPATH=\"/d" -i "$mnt/etc/profile"
+    echo "export DEX2OATBOOTCLASSPATH=\"/apex/com.android.art/javalib/core-oj.jar:/apex/com.android.art/javalib/core-libart.jar:/apex/com.android.art/javalib/okhttp.jar:/apex/com.android.art/javalib/bouncycastle.jar:/apex/com.android.art/javalib/apache-xml.jar:/system/framework/framework.jar:/system/framework/framework-graphics.jar:/system/framework/ext.jar:/system/framework/telephony-common.jar:/system/framework/voip-common.jar:/system/framework/ims-common.jar:/apex/com.android.i18n/javalib/core-icu4j.jar:/system/framework/telephony-ext.jar\"" >> "$mnt/etc/profile"
 
     # SET 250MB TO ALLOW POSTGRESQL #
     $busybox sysctl -w kernel.shmmax=268435456

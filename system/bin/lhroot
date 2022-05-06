@@ -68,7 +68,7 @@ alpine () {
                 *)
                     abort "unknown arch" ;;
             esac
-            wget "https://dl-cdn.alpinelinux.org/alpine/v3.15/releases/${archurl}/alpine-minirootfs-3.15.0-${archurl}.tar.gz" -qO $tarball & e_spinner
+            wget "https://dl-cdn.alpinelinux.org/alpine/v3.15/releases/${archurl}/alpine-minirootfs-3.15.4-${archurl}.tar.gz" -qO $tarball & e_spinner
         fi
         mkdir -p "$folder"
         cd "$folder"
@@ -173,7 +173,7 @@ arch_arm () {
                 arm64)
                     archurl="aarch64" ;;
                 *)
-                    abort "unknow arch, maybe your arch is x64?"
+                    abort "unknown arch, maybe your arch is x64?"
             esac
                 wget "https://sg.mirror.archlinuxarm.org/os/ArchLinuxARM-${archurl}-latest.tar.gz" -qO $tarball & e_spinner
         fi
@@ -206,7 +206,7 @@ arch_64 () {
                 *)
                     abort "Unknown arch, maybe your arch is x86 or arm?" ;;
             esac
-            wget "https://mirrors.edge.kernel.org/archlinux/iso/2021.12.01/archlinux-bootstrap-2021.12.01-${archurl}.tar.gz" -qO $tarball & e_spinner
+            wget "https://mirrors.edge.kernel.org/archlinux/iso/2022.05.01/archlinux-bootstrap-2022.05.01-${archurl}.tar.gz" -qO $tarball & e_spinner
         fi
         mkdir -p "$folder"
         cd "$folder"
@@ -217,6 +217,35 @@ arch_64 () {
     echo "Removing rootfs tarball for some space"
     rm $tarball
     echo "You can now launch Arch Linux with the bootlinux script"
+}
+
+manjaro () {
+    folder="/data/manjaro"
+    if [ -d "$folder" ]; then
+        first=1
+        echo "skipping downloading"
+    fi
+    tmp="/data/local/tmp"
+    tarball="$tmp/manjaro.tar.xz"
+    if [ "$first" != 1 ]; then
+        if [ ! -f $tarball ]; then
+            echo "Downloading Rootfs, please wait..."
+            case $ARCH in
+                arm64)
+                    archurl="https://archive.org/download/manjaro-rootfs-arm64.tar/manjaro-rootfs-arm64.tar.xz" ;;
+                *)
+                    abort "Only Support ARM64" ;;
+            esac
+            wget $archurl -qO $tarball & e_spinner
+        fi
+        mkdir -p "$folder"
+        cd "$folder"
+        tar xf ${tarball} 2> /dev/null||:
+        cd $HOME
+    fi
+    echo "Removing rootfs tarball for some space"
+    rm $tarball
+    echo "You can now launch Manjaro with the bootlinux script"
 }
 
 kali () {
@@ -335,8 +364,9 @@ install_chroot () {
         echo "4. Debian"
         echo "5. Fedora"
         echo "6. Kali Linux"
-        echo "7. Parrot"
-        echo "8. Ubuntu"
+        echo "7. Manjaro"
+        echo "8. Parrot"
+        echo "9. Ubuntu"
         read -r choice?'--> '
         echo " "
         case $choice in
@@ -347,8 +377,9 @@ install_chroot () {
             4) debian ;;
             5) fedora ;;
             6) kali ;;
-            7) parrot ;;
-            8) ubuntu ;;
+            7) manjaro ;;
+            8) parrot ;;
+            9) ubuntu ;;
         esac
     done
 }
@@ -362,6 +393,7 @@ remove_chroot () {
     kali="/data/kali"
     parrot="/data/parrot"
     fedora="/data/fedora"
+    manjaro="/data/manjaro"
     if [ -d "$alpine" ]; then
         installed=true
         lmount=$alpine
@@ -383,6 +415,9 @@ remove_chroot () {
     elif [ -d "$fedora" ]; then
         installed=true
         lmount=$fedora
+    elif [ -d "$manjaro" ]; then
+        installed=true
+        lmount=$manjaro
     else
         :
     fi
