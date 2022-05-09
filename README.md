@@ -73,7 +73,8 @@ mount_image <path to img> <path to linux directory>
 ## License
 Licensed under GNU GPL v3
 
-The rootfs tarball is taken from AnLinux Resources [Repository](https://github.com/EXALAB/Anlinux-Resources)
+~~The rootfs tarball is taken from AnLinux Resources [Repository](https://github.com/EXALAB/Anlinux-Resources)~~
+Most of distro rootfs tarballs had been rebuilt and stored at [lhroot-repo](https://github.com/FerryAr/lhroot-repo)
 
 ## Support
 - Open issue here
