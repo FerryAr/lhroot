@@ -50,7 +50,6 @@ mount_image <path to img> <path to linux directory>
 - Fedora, Installed on /data/fedora
 - Kali Linux, Installed on /data/kali
 - Manjaro ARM, Installed on /data/manjaro
-- Parrot, Installed on /data/parrot
 - Ubuntu, Installed on /data/ubuntu
 
 ...more distro added soon
