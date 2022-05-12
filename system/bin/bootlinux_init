@@ -31,8 +31,6 @@ elif [ -d "/data/arch" ]; then
     mnt=/data/arch
 elif [ -d "/data/kali" ]; then
     mnt=/data/kali
-elif [ -d "/data/parrot" ]; then
-    mnt=/data/parrot
 elif [ -d "/data/fedora" ]; then
     mnt=/data/fedora
 elif [ -d "/data/manjaro" ]; then
@@ -249,11 +247,6 @@ mount_linux_chroot() {
     #########
     $busybox chmod 666 /dev/null
 
-    ######### SET 250MB TO ALLOW POSTGRESQL #########
-    $busybox sysctl -w kernel.shmmax=268435456
-
-    $busybox chmod 666 /dev/null
-
     sed "/export ANDROID_DATA=\"\/data\"/d" -i "$mnt/etc/profile"
     echo "export ANDROID_DATA=\"/data\"" >> "$mnt/etc/profile"
     sed "/export ANDROID_ROOT=\"\/system\"/d" -i "$mnt/etc/profile"
@@ -270,9 +263,6 @@ mount_linux_chroot() {
     echo "export BOOTCLASSPATH=\"/apex/com.android.art/javalib/core-oj.jar:/apex/com.android.art/javalib/core-libart.jar:/apex/com.android.art/javalib/okhttp.jar:/apex/com.android.art/javalib/bouncycastle.jar:/apex/com.android.art/javalib/apache-xml.jar:/system/framework/framework.jar:/system/framework/framework-graphics.jar:/system/framework/ext.jar:/system/framework/telephony-common.jar:/system/framework/voip-common.jar:/system/framework/ims-common.jar:/apex/com.android.i18n/javalib/core-icu4j.jar:/system/framework/telephony-ext.jar:/apex/com.android.appsearch/javalib/framework-appsearch.jar:/apex/com.android.conscrypt/javalib/conscrypt.jar:/apex/com.android.ipsec/javalib/android.net.ipsec.ike.jar:/apex/com.android.media/javalib/updatable-media.jar:/apex/com.android.mediaprovider/javalib/framework-mediaprovider.jar:/apex/com.android.os.statsd/javalib/framework-statsd.jar:/apex/com.android.permission/javalib/framework-permission.jar:/apex/com.android.permission/javalib/framework-permission-s.jar:/apex/com.android.scheduling/javalib/framework-scheduling.jar:/apex/com.android.sdkext/javalib/framework-sdkextensions.jar:/apex/com.android.tethering/javalib/framework-connectivity.jar:/apex/com.android.tethering/javalib/framework-tethering.jar:/apex/com.android.wifi/javalib/framework-wifi.jar\"" >> "$mnt/etc/profile"
     sed "/export DEX2OATBOOTCLASSPATH=\"/d" -i "$mnt/etc/profile"
     echo "export DEX2OATBOOTCLASSPATH=\"/apex/com.android.art/javalib/core-oj.jar:/apex/com.android.art/javalib/core-libart.jar:/apex/com.android.art/javalib/okhttp.jar:/apex/com.android.art/javalib/bouncycastle.jar:/apex/com.android.art/javalib/apache-xml.jar:/system/framework/framework.jar:/system/framework/framework-graphics.jar:/system/framework/ext.jar:/system/framework/telephony-common.jar:/system/framework/voip-common.jar:/system/framework/ims-common.jar:/apex/com.android.i18n/javalib/core-icu4j.jar:/system/framework/telephony-ext.jar\"" >> "$mnt/etc/profile"
-
-    # SET 250MB TO ALLOW POSTGRESQL #
-    $busybox sysctl -w kernel.shmmax=268435456
 
     # NETWORK SETTINGS #
     $busybox sysctl -w net.ipv4.ip_forward=1

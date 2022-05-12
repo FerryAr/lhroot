@@ -18,8 +18,6 @@ elif [ -d "/data/ubuntu" ]; then
    export mnt=/data/ubuntu
 elif [ -d "/data/kali" ]; then
     export mnt=/data/kali
-elif [ -d "/data/parrot" ]; then
-    export mnt=/data/parrot
 elif [ -d "/data/fedora" ]; then
     export mnt=/data/fedora
 elif [ -d "/data/arch" ]; then
@@ -55,10 +53,6 @@ export HOME=/root
 export LOGNAME=root
 unset LD_PRELOAD
 
-# set shmmax to 128mb to free memory#
-
-$busybox sysctl -w kernel.shmmax=134217728
-
 echo "Shutting down SSH Server"
 $busybox chmod 666 /dev/null
 
@@ -83,6 +77,15 @@ $busybox umount $mnt/sys && echo "unmounted sys"
 $busybox umount $mnt/system && echo "unmounted system"
 $busybox umount $mnt/sdcard && echo "unmounted sdcard"
 $busybox umount $mnt/external_sd && echo "unmounted external_sd"
+$busybox umount $mnt/data/data && echo "unmounted data/data"
+$busybox umount $mnt/data/dalvik-cache && echo "unmounted data/dalvik-cache"
+$busybox umount $mnt/linkerconfig && echo "unmounted linkerconfig"
+
+cd "$mnt/apex"
+for f in *; do
+    $busybox umount "$mnt/apex/$f" && echo "unmounted apex/$f"
+done
+cd - 2>&1 > /dev/null
 
 export PATH=$PRESERVED_PATH
 
