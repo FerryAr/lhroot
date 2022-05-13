@@ -21,7 +21,14 @@ f_checkforroot(){
 
 ######### VARIABLES #########
 mnt=
-if [ -d "/data/alpine" ]; then
+if [ -n "$1" ]; then
+    if [ -d "$1" ]; then
+        mnt=$1
+    else
+        echo "Directory $1 does not found"
+        exit 1
+    fi
+elif [ -d "/data/alpine" ]; then
     mnt=/data/alpine
 elif [ -d "/data/debian" ]; then
     mnt=/data/debian
@@ -35,6 +42,8 @@ elif [ -d "/data/fedora" ]; then
     mnt=/data/fedora
 elif [ -d "/data/manjaro" ]; then
     mnt=/data/manjaro
+elif [ -d "/data/void" ]; then
+    mnt=/data/void
 else
     echo "No chroot installed";
     exit 1

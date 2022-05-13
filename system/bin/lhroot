@@ -155,6 +155,43 @@ ubuntu () {
     echo "You can now launch Ubuntu with the bootlinux script"
 }
 
+void () {
+    folder="/data/void"
+    if [ -d "$folder" ]; then
+        first=1
+        echo "skipping downloading"
+    fi
+    tmp="/data/local/tmp"
+    tarball="$tmp/void.tar.xz"
+    archurl=
+    if [ "$first" != 1 ]; then
+        if [ ! -f $tarball ]; then
+            echo "Downloading Rootfs, please wait..."
+            case $ARCH in
+                arm)
+                    archurl="armhf" ;;
+                arm64)
+                    archurl="arm64" ;;
+                x86)
+                    archurl="i386" ;;
+                x64)
+                    archurl="amd64" ;;
+                *)
+                    abort "unknown arch" ;;
+            esac
+            wget "https://raw.githubusercontent.com/FerryAr/lhroot-repo/main/Rootfs/Void/${archurl}/void-rootfs-${archurl}.tar.xz" -qO $tarball & e_spinner
+        fi
+        mkdir -p "$folder"
+        cd "$folder"
+        echo "Decompressing Rootfs..."
+        tar xfJ ${tarball} 2> /dev/null||:
+        cd $HOME
+    fi
+    echo "Removing rootfs tarball for some space"
+    rm $tarball
+    echo "You can now launch Void with bootlinux script"
+}
+
 arch_arm () {
     folder="/data/arch"
     if [ -d "$folder" ]; then
@@ -163,7 +200,7 @@ arch_arm () {
     fi
     tmp="/data/local/tmp"
     tarball="$tmp/arch.tar.gz"
-    if [ "$first != 1" ]; then
+    if [ "$first" != 1 ]; then
         if [ ! -f $tarball ]; then
             echo "Downloading Rootfs, please wait..."
             archurl=
@@ -334,6 +371,7 @@ install_chroot () {
         echo "6. Kali Linux"
         echo "7. Manjaro"
         echo "8. Ubuntu"
+        echo "9. Void Linux"
         read -r choice?'--> '
         echo " "
         case $choice in
@@ -346,6 +384,7 @@ install_chroot () {
             6) kali ;;
             7) manjaro ;;
             8) ubuntu ;;
+            9) void ;;
         esac
     done
 }
@@ -359,6 +398,7 @@ remove_chroot () {
     kali="/data/kali"
     fedora="/data/fedora"
     manjaro="/data/manjaro"
+    void="/data/void"
     if [ -d "$alpine" ]; then
         installed=true
         lmount=$alpine
@@ -380,6 +420,9 @@ remove_chroot () {
     elif [ -d "$manjaro" ]; then
         installed=true
         lmount=$manjaro
+    elif [ -d "$void" ]; then
+        installed=true
+        lmount=$void
     else
         :
     fi

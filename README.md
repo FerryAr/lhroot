@@ -51,6 +51,7 @@ mount_image <path to img> <path to linux directory>
 - Kali Linux, Installed on /data/kali
 - Manjaro ARM, Installed on /data/manjaro
 - Ubuntu, Installed on /data/ubuntu
+- Void Linux, Installed on /data/void
 
 ...more distro added soon
 

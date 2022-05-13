@@ -10,7 +10,14 @@ else
 	exit
 fi
 export bin=/system/bin
-if [ -d "/data/alpine" ]; then
+if [ -n "$1" ]; then
+    if [ -d "$1" ]; then
+        export mnt="$1"
+    else
+        echo "Directory $1 not exist"
+        exit 1
+    fi
+elif [ -d "/data/alpine" ]; then
    export mnt=/data/alpine
 elif [ -d "/data/debian" ]; then
    export mnt=/data/debian
@@ -24,6 +31,8 @@ elif [ -d "/data/arch" ]; then
     export mnt=/data/arch
 elif [ -d "/data/manjaro" ]; then
     export mnt=/data/manjaro
+elif [ -d "/data/void" ]; then
+    export mnt="/data/void"
 else
     echo "No chroot installed"
     exit 1
