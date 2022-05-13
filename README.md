@@ -25,10 +25,20 @@ After installation to boot into Linux Chroot use :
 bootlinux
 ```
 
+After v2.1 you can run 2 or more chroot instances, just pass chroot folder, e.g.
+```console
+bootlinux /data/manjaro
+```
+
 To unmount bind directory use :
 
 ```console
 killlinux
+```
+
+After v2.1 you can terminate specific instance, just pass chroot folder, e.g.
+```console
+killlinux /data/manjaro
 ```
 
 To make image use :
