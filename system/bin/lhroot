@@ -18,6 +18,18 @@ MODDIR="$MOUNTPATH/$ID"
 # Set path to your busybox if applicable
 _bb=
 
+# Set directory for each chroot
+alpine="/data/alpine"
+debian="/data/debian"
+ubuntu="/data/ubuntu"
+arch="/data/arch"
+kali="/data/kali"
+fedora="/data/fedora"
+manjaro="/data/manjaro"
+void="/data/void"
+
+tmp="/data/local/tmp"
+
 # Load mod-util.sh
 . $MODDIR/mod-util.sh || exit $?
 
@@ -44,15 +56,18 @@ set -x 2>$VERLOG
 # > You can add functions, variables & etc.
 # > Rather than editing the default vars above.
 
+checkdir () {
+    if [ -d "$1" ]; then
+        first=1
+        echo "skipping downloading"
+    fi
+}
+
 alpine () {
-	folder="/data/alpine"
-    tmp="/data/local/tmp"
+	folder=$alpine
 	tarball="$tmp/alpine.tar.gz"
 	archurl=
-	if [ -d "$folder" ]; then
-	  first=1
-      echo "skipping downloading"
-	fi
+	checkdir "$folder"
     if [ "$first" != 1 ]; then
         if [ ! -f $tarball ]; then
             echo "Downloading Rootfs, please wait..."
@@ -82,28 +97,24 @@ alpine () {
 }
 
 debian () {
-    folder="/data/debian"
-    if [ -d "$folder" ]; then
-        first=1
-        echo "skipping downloading"
-    fi
-    tmp="/data/local/tmp"
+    folder=$debian
+    checkdir "$folder"
     tarball="$tmp/debian.tar.xz"
     archurl=
     if [ "$first" != 1 ]; then
         if [ ! -f $tarball ]; then
-           echo "Downloading Rootfs, please wait..."
-           case $ARCH in
-               arm)
-                   archurl="armhf" ;;
-               arm64)
-                   archurl="arm64" ;;
-               x86)
-                   archurl="i386" ;;
-               x64)
-                   archurl="amd64" ;;
-               *)
-                   abort "unknown arch" ;;
+            echo "Downloading Rootfs, please wait..."
+            case $ARCH in
+                arm)
+                    archurl="armhf" ;;
+                arm64)
+                    archurl="arm64" ;;
+                x86)
+                    archurl="i386" ;;
+                x64)
+                    archurl="amd64" ;;
+                *)
+                    abort "unknown arch" ;;
             esac
             wget "https://raw.githubusercontent.com/FerryAr/lhroot-repo/main/Rootfs/Debian/${archurl}/debian-rootfs-${archurl}.tar.xz" -qO $tarball & e_spinner
         fi
@@ -119,12 +130,8 @@ debian () {
 }
 
 ubuntu () {
-    folder="/data/ubuntu"
-    if [ -d "$folder" ]; then
-        first=1
-        echo "skipping downloading"
-    fi
-    tmp="/data/local/tmp"
+    folder=$ubuntu
+    checkdir "$folder"
     tarball="$tmp/ubuntu.tar.xz"
     archurl=
     if [ "$first" != 1 ]; then
@@ -156,12 +163,8 @@ ubuntu () {
 }
 
 void () {
-    folder="/data/void"
-    if [ -d "$folder" ]; then
-        first=1
-        echo "skipping downloading"
-    fi
-    tmp="/data/local/tmp"
+    folder=$void
+    checkdir "$folder"
     tarball="$tmp/void.tar.xz"
     archurl=
     if [ "$first" != 1 ]; then
@@ -193,12 +196,8 @@ void () {
 }
 
 arch_arm () {
-    folder="/data/arch"
-    if [ -d "$folder" ]; then
-        first=1
-        echo "skipping downloading"
-    fi
-    tmp="/data/local/tmp"
+    folder=$arch
+    checkdir "$folder"
     tarball="$tmp/arch.tar.gz"
     if [ "$first" != 1 ]; then
         if [ ! -f $tarball ]; then
@@ -226,12 +225,8 @@ arch_arm () {
 }
 
 arch_64 () {
-    folder="/data/arch"
-    if [ -d "$folder" ]; then
-        first=1
-        echo "skipping downloading"
-    fi
-    tmp="/data/local/tmp"
+    folder=$arch
+    checkdir "$folder"
     tarball="$tmp/arch.tar.gz"
     if [ "$first" != 1 ]; then
         if [ ! -f $tarball ]; then
@@ -258,11 +253,7 @@ arch_64 () {
 
 manjaro () {
     folder="/data/manjaro"
-    if [ -d "$folder" ]; then
-        first=1
-        echo "skipping downloading"
-    fi
-    tmp="/data/local/tmp"
+    checkdir "$folder"
     tarball="$tmp/manjaro.tar.xz"
     if [ "$first" != 1 ]; then
         if [ ! -f $tarball ]; then
@@ -277,6 +268,7 @@ manjaro () {
         fi
         mkdir -p "$folder"
         cd "$folder"
+        echo "Decompressing Rootfs..."
         tar xf ${tarball} 2> /dev/null||:
         cd $HOME
     fi
@@ -287,11 +279,7 @@ manjaro () {
 
 kali () {
     folder="/data/kali"
-    if [ -d "$folder" ]; then
-        first=1
-        echo "skipping downloading"
-    fi
-    tmp="/data/local/tmp"
+    checkdir "$folder"
     tarball="$tmp/kali.tar.xz"
     if [ "$first" != 1 ]; then
         if [ ! -f $tarball ]; then
@@ -324,11 +312,7 @@ kali () {
 
 fedora () {
     folder="/data/fedora"
-    if [ -d "$folder" ]; then
-        first=1
-        echo "skipping downloading"
-    fi
-    tmp="/data/local/tmp"
+    checkdir "$folder"
     tarball="$tmp/fedora.tar.xz"
     if [ "$first" != 1 ]; then
         if [ ! -f $tarball ]; then
@@ -390,54 +374,77 @@ install_chroot () {
 }
 
 remove_chroot () {
+    clear
     installed=false
-    alpine="/data/alpine"
-    debian="/data/debian"
-    ubuntu="/data/ubuntu"
-    arch="/data/arch"
-    kali="/data/kali"
-    fedora="/data/fedora"
-    manjaro="/data/manjaro"
-    void="/data/void"
-    if [ -d "$alpine" ]; then
-        installed=true
-        lmount=$alpine
-    elif [ -d "$debian" ]; then
-        installed=true
-        lmount=$debian
-    elif [ -d "$ubuntu" ]; then
-        installed=true
-        lmount=$ubuntu
-    elif [ -d "$arch" ]; then
-        installed=true
-        lmount=$arch
-    elif [ -d "$kali" ]; then
-        installed=true
-        lmount=$kali
-    elif [ -d "$fedora" ]; then
-        installed=true
-        lmount=$fedora
-    elif [ -d "$manjaro" ]; then
-        installed=true
-        lmount=$manjaro
-    elif [ -d "$void" ]; then
-        installed=true
-        lmount=$void
-    else
-        :
-    fi
-    if [ $installed ]; then
-        killlinux
-        echo "If dev is not successfully unmounted, please reboot your device or your device will be freezed."
-        sleep 1
-        echo "I give you 15 seconds to reboot your device if dev is not successfully unmounted."
-        sleep 1
-        echo "After reboot, you can rerun this script or remove chroot yourself with 'rm -rf /data/<chroot folder>' command"
-        sleep 15
-        rm -rf $lmount
-    else
-        echo "No chroot installed"
-    fi
+    while true; do
+        echo "$div"
+        title_div "Remove which distro?"
+        echo "$div"
+        echo "0. Back"
+        echo "1. Arch Linux ARM"
+        echo "2. Arch Linux x64"
+        echo "3. Alpine Linux"
+        echo "4. Debian"
+        echo "5. Fedora"
+        echo "6. Kali Linux"
+        echo "7. Manjaro"
+        echo "8. Ubuntu"
+        echo "9. Void Linux"
+        read -r choice?'--> '
+        echo " "
+        case $choice in
+            0) break 3;;
+            1)
+                installed=true
+                lmount=$arch
+                ;;
+            2)
+                installed=true
+                lmount=$arch
+                ;;
+            3) 
+                installed=true
+                lmount=$alpine
+                ;;
+            4)
+                installed=true
+                lmount=$debian
+                ;;
+            5)
+                installed=true
+                lmount=$fedora
+                ;;
+            6)
+                installed=true
+                lmount=$kali
+                ;;
+            7)
+                installed=true
+                lmount=$manjaro
+                ;;
+            8)
+                installed=true
+                lmount=$ubuntu
+                ;;
+            9)
+                installed=true
+                lmount=$void
+                ;;
+        esac
+        if [ $installed ] && [ -d $lmount ]; then
+            killlinux
+            echo "If dev is not successfully unmounted, please reboot your device or your device will be freezed."
+            sleep 1
+            echo "I give you 15 seconds to reboot your device if dev is not successfully unmounted."
+            sleep 1
+            echo "After reboot, you can rerun this script or remove chroot yourself with 'rm -rf /data/<chroot folder>' command"
+            sleep 15
+            rm -rf $lmount
+            echo "Chroot removed"
+        else
+            echo "No chroot installed"
+        fi
+    done
 }
 
 mod_head
@@ -446,6 +453,7 @@ echo " "
 test_connection || abort "This module requires internet for running!"
 
 while true; do
+    clear
     echo "$div"
     title_div "Chroot Installer"
     echo "$div"
@@ -462,5 +470,3 @@ while true; do
         q) exit 0 ;;
     esac
 done
-
-
