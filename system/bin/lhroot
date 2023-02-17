@@ -433,14 +433,23 @@ remove_chroot () {
         esac
         if [ $installed ] && [ -d $lmount ]; then
             killlinux
-            echo "If dev is not successfully unmounted, please reboot your device or your device will be freezed."
-            sleep 1
-            echo "I give you 15 seconds to reboot your device if dev is not successfully unmounted."
-            sleep 1
-            echo "After reboot, you can rerun this script or remove chroot yourself with 'rm -rf /data/<chroot folder>' command"
-            sleep 15
-            rm -rf $lmount
-            echo "Chroot removed"
+	    if [ "$(mountpoint $lmount/dev 2> /dev/null | grep 'is a')" ]; then
+	    	echo "/dev is still mounted, please reboot your device."
+		sleep 1
+		echo "After reboot you can rerun this script or remove chroot yourself with 'rm -rf /data/<chroot folder> command'"
+		exit 1;
+	    else
+		echo "Check if any mountpoint is still mounted on chroot folder."
+		sleep 1;
+		echo "I give you 30 seconds to think twice before removing chroot folder."
+		sleep 1;
+		echo "To ensure that all mountpoint is unmounted, I recommend you to reboot your device."
+		sleep 1;
+		echo "After reboot you can rerun this script or remove chroot yourself with 'rm -rf /data/<chroot folder> command'"
+		sleep 30;
+		rm -rf $lmount
+		echo "Chroot removed"
+	    fi
         else
             echo "No chroot installed"
         fi
