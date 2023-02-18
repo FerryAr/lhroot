@@ -15,8 +15,10 @@ ls /data >/dev/null 2>&1 || { echo "$ID needs to run as root!"; echo "type 'su' 
 MODDIR="$MOUNTPATH/$ID"
 [ ! -d $MODDIR ] && { echo "Module not detected!"; exit 1; }
 
-# Set path to your busybox if applicable
-_bb=
+if command -v busybox &> /dev/null
+then
+    _bb=$(command -v busybox)
+fi
 
 # Set directory for each chroot
 alpine="/data/alpine"
