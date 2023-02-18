@@ -6,8 +6,8 @@
 ##########################################################################################
 
 # Versions
-MODUTILVER=v2.6.1
-MODUTILVCODE=261
+MODUTILVER=v2.6
+MODUTILVCODE=262
 
 # Check A/B slot
 if [ -d /system_root ]; then
@@ -72,6 +72,7 @@ set_perm() {
   chmod $4 $1 || return 1
   (if [ -z $5 ]; then
     case $1 in
+      *"/bin/"*) chcon 'u:object_r:system_file:s0' $1;;
       *"system/vendor/app/"*) chcon 'u:object_r:vendor_app_file:s0' $1;;
       *"system/vendor/etc/"*) chcon 'u:object_r:vendor_configs_file:s0' $1;;
       *"system/vendor/overlay/"*) chcon 'u:object_r:vendor_overlay_file:s0' $1;;
@@ -176,10 +177,12 @@ div="${Bl}$(printf '%*s' "${character_no}" '' | tr " " "=")${N}"
 # title_div [-c] <title>
 # based on $div with <title>
 title_div() {
+  set +x
   [ "$1" == "-c" ] && local character_no=$2 && shift 2
   [ -z "$1" ] && { local message=; no=0; } || { local message="$@ "; local no=$(echo "$@" | wc -c); }
   [ $character_no -gt $no ] && local extdiv=$((character_no-no)) || { echo "Invalid!"; return; }
   echo "${W}$message${N}${Bl}$(printf '%*s' "$extdiv" '' | tr " " "=")${N}"
+  set -x 2>>$VERLOG
 }
 
 # set_file_prop <property> <value> <prop.file>
@@ -201,7 +204,7 @@ ProgressBar() {
 # Determine Screen Size
   if [[ "$COLUMNS" -le "57" ]]; then
     local var1=2
-	local var2=20
+    local var2=20
   else
     local var1=4
     local var2=40
@@ -238,6 +241,7 @@ printf "\r${@} [${_indicator}]"
 
 # cmd & spinner <message>
 e_spinner() {
+  set +x
   PID=$!
   h=0; anim='-\|/';
   while [ -d /proc/$PID ]; do
@@ -245,6 +249,7 @@ e_spinner() {
     sleep 0.02
     printf "\r${@} [${anim:$h:1}]"
   done
+  set -x 2>>$VERLOG
 }
 
 # test_connection
@@ -261,7 +266,6 @@ test_connection() {
   ) && echo " - OK" || { echo " - Error"; false; }
 }
 
-
 # Log files will be uploaded to termbin.com
 # Logs included: VERLOG LOG oldVERLOG oldLOG
 upload_logs() {
@@ -272,15 +276,10 @@ upload_logs() {
     [ -s $oldVERLOG ] && oldverUp=$(cat $oldVERLOG | nc termbin.com 9999) || oldverUp=none
     [ -s $LOG ] && logUp=$(cat $LOG | nc termbin.com 9999) || logUp=none
     [ -s $oldLOG ] && oldlogUp=$(cat $oldLOG | nc termbin.com 9999) || oldlogUp=none
-    [ -s $stdoutLOG ] && stdoutUp=$(cat $stdoutLOG | nc termbin.com 9999) || stdoutUp=none
-    [ -s $oldstdoutLOG ] && oldstdoutUp=$(cat $oldstdoutLOG | nc termbin.com 9999) || oldstdoutUp=none
     echo -n "Link: "
     echo "$MODEL ($DEVICE) API $API\n$ROM\n$ID\n
     O_Verbose: $oldverUp
     Verbose:   $verUp
-
-    O_STDOUT:  $oldstdoutUp
-    STDOUT:    $stdoutUp
 
     O_Log: $oldlogUp
     Log:   $logUp" | nc termbin.com 9999
