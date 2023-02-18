@@ -133,6 +133,7 @@ mount_external_storage() {
 }
 
 mount_linux_chroot() {
+    sdkVer="$(getprop ro.system.build.version.sdk)"
 
     mkdir -p $mnt/dev
     mkdir -p $mnt/proc
@@ -141,13 +142,14 @@ mount_linux_chroot() {
     mkdir -p $mnt/sdcard
     mkdir -p $mnt/external_sd
 
-    mkdir -p $mnt/apex
-    cd "/apex"
-    for f in *; do
-        mkdir -p "$mnt/apex/$f"
-    done
-    cd - 2>&1 > /dev/null
-
+    if [ $sdkVer -ge 29 ]; then
+        mkdir -p $mnt/apex
+        cd "/apex"
+        for f in *; do
+            mkdir -p "$mnt/apex/$f"
+        done
+        cd - 2>&1 > /dev/null
+    fi
     mkdir -p $mnt/data/data
     mkdir -p $mnt/data/dalvik-cache
     mkdir -p $mnt/vendor
@@ -212,12 +214,14 @@ mount_linux_chroot() {
     # Android
 
     ######### MOUNT APEX #######
-    grep "$mnt/apex" /proc/mounts -q 2>&1 > /dev/null
-    if [[ "$?" -ne 0 ]]; then
-        cd /apex
-        for f in *; do
-            $busybox mount --rbind "/apex/$f" "$mnt/apex/$f" && bllog "[+] mounted /apex/$f"
-        done
+    if [ $sdkVer -ge 29 ]; then
+        grep "$mnt/apex" /proc/mounts -q 2>&1 > /dev/null
+        if [[ "$?" -ne 0 ]]; then
+            cd /apex
+            for f in *; do
+                $busybox mount --rbind "/apex/$f" "$mnt/apex/$f" && bllog "[+] mounted /apex/$f"
+            done
+        fi
     fi
 
     ####### MOUNT DATA ########
