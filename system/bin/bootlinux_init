@@ -21,11 +21,24 @@ f_checkforroot(){
 
 ######### VARIABLES #########
 mnt=
-if [ -n "$1" ]; then
-    if [ -d "$1" ]; then
-        mnt=$1
+dir=
+if [ -n $1 ] && [ "$1" = "-r" ] && [ -n "$2" ] && [ "${2#-}" = "$2" ]; then
+		if [ -n "$3" ]; then
+				if [ -d $3 ]; then
+						dir=$3
+				else
+						echo "Directory $3 does not found"
+						exit 1
+				fi
+		fi
+else
+	dir=$1
+fi
+if [ -n "$dir" ]; then
+    if [ -d "$dir" ]; then
+        mnt=$dir
     else
-        echo "Directory $1 does not found"
+        echo "Directory $dir does not found"
         exit 1
     fi
 elif [ -d "/data/alpine" ]; then
@@ -281,7 +294,7 @@ mount_linux_chroot() {
     $busybox sysctl -w net.ipv4.ip_forward=1
     echo "127.0.0.1		 localhost linux" > $mnt/etc/hosts
     echo "::1				 localhost ip6-localhost ip6-loopback" >> $mnt/etc/hosts
-    echo "linux" > $mnt/proc/sys/kernel/hostname
+    #echo "linux" > $mnt/proc/sys/kernel/hostname
     echo "The Linux chroot has been started."
     if [ -f /sdcard/debug ]; then
         echo " [!] Everytime you mount the linux chroot, please press ENTER to continue. (If chroot is already mounted, this won't prompt.)"

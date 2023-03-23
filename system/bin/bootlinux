@@ -4,4 +4,8 @@
 SCRIPT_PATH=$(readlink -f $0)
 . ${SCRIPT_PATH%/*}/bootlinux_env
 
-$busybox chroot $mnt /usr/bin/env su -l
+if [ "$1" = "-r" ] && [ -n "$2" ] && [ "${2#-}" = "$2" ]; then
+  $busybox chroot $mnt /usr/bin/env su -l -c $2
+else
+  $busybox chroot $mnt /usr/bin/env su -l
+fi
