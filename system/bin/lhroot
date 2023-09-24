@@ -100,7 +100,7 @@ alpine () {
                 *)
                     abort "unknown arch" ;;
             esac
-            wget "https://dl-cdn.alpinelinux.org/alpine/v3.17/releases/${archurl}/alpine-minirootfs-3.17.2-${archurl}.tar.gz" -qO $tarball & e_spinner
+            wget "https://dl-cdn.alpinelinux.org/alpine/v3.18/releases/${archurl}/alpine-minirootfs-3.18.3-${archurl}.tar.gz" -qO $tarball & e_spinner
         fi
         mkdir -p "$folder"
         cd "$folder"
@@ -255,7 +255,7 @@ arch_64 () {
                 *)
                     abort "Unknown arch, maybe your arch is x86 or arm?" ;;
             esac
-            wget "https://mirrors.edge.kernel.org/archlinux/iso/2023.02.01/archlinux-bootstrap-2023.02.01-${archurl}.tar.gz" -qO $tarball & e_spinner
+            wget "https://mirrors.edge.kernel.org/archlinux/iso/2023.09.01/archlinux-bootstrap-2023.09.01-${archurl}.tar.gz" -qO $tarball & e_spinner
         fi
         mkdir -p "$folder"
         cd "$folder"
