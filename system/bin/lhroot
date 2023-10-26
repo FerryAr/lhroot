@@ -27,8 +27,8 @@ fi
 # Magisk Mod Directories
 MODPATH=/data/adb/modules/$ID
 $KSU && MOUNTPATH=$(dirname $MODPATH) || MOUNTPATH="$(magisk --path)/.magisk/modules"
-MOUNTDIR="$MOUNTPATH/$ID"
-[ ! -d $MOUNTDIR ] && { echo "Module not detected!"; exit 1; }
+MODDIR="$MOUNTPATH/$ID"
+[ ! -d $MODDIR ] && { echo "Module not detected!"; exit 1; }
 
 if command -v busybox &> /dev/null
 then
