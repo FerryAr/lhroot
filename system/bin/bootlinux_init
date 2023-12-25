@@ -1,14 +1,13 @@
 #!/system/bin/sh
 
-if [ -x /system/xbin/busybox ]; then
-	busybox=/system/xbin/busybox
-elif [ -x /system/bin/busybox ]; then
-	busybox=/system/bin/busybox
-else
-	echo "Busybox not found!  Install it, dummy!"
-	log "Busybox not found!  Install it, dummy!"
-	exit 1
+# if busybox is not found, exit
+if ! command -v busybox >/dev/null 2>&1; then
+    echo "Busybox not found!  Install it, dummy!"
+    log "Busybox not found!  Install it, dummy!"
+    exit 1
 fi
+
+busybox=$(command -v busybox)
 
 ######### CHECK FOR ROOT #########
 f_checkforroot(){
