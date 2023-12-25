@@ -8,6 +8,7 @@ if ! command -v busybox >/dev/null 2>&1; then
 fi
 
 busybox=$(command -v busybox)
+sdkVer="$(getprop ro.system.build.version.sdk)"
 
 export bin=/system/bin
 if [ -n "$1" ]; then
@@ -90,11 +91,13 @@ $busybox umount $mnt/data/data && echo "unmounted data/data"
 $busybox umount $mnt/data/dalvik-cache && echo "unmounted data/dalvik-cache"
 $busybox umount $mnt/linkerconfig && echo "unmounted linkerconfig"
 
-cd "$mnt/apex"
-for f in *; do
-    $busybox umount "$mnt/apex/$f" && echo "unmounted apex/$f"
-done
-cd - 2>&1 > /dev/null
+if [ $sdkVer -ge 29 ]; then
+    cd "$mnt/apex"
+    for f in *; do
+        $busybox umount "$mnt/apex/$f" && echo "unmounted apex/$f"
+    done
+    cd - 2>&1 > /dev/null
+fi
 
 export PATH=$PRESERVED_PATH
 
