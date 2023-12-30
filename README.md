@@ -55,6 +55,25 @@ To mount image use :
 ```console
 mount_image <path to img> <path to linux directory>
 ```
+## Automatically Start Chroot Linux on Device Boot
+
+If you have installed the lhroot module, you can simply place the following script in Magisk(or KernelSU)'s boot script directory (/data/adb/service.d):
+
+```
+#!/bin/sh
+/system/bin/bootlinux
+```
+
+Assuming the script is named lhroot.sh, give it executable permissions with `chmod +x lhroot.sh`.
+
+Restart your device, and you will see that the Linux system will automatically start along with the device boot.
+
+This functionality is provided by Magisk or KernelSU.
+
+For more information, please refer to the following resources:
+
+- Magisk: [Boot Scripts](https://topjohnwu.github.io/Magisk/guides.html#boot-scripts)
+- KernelSU: [Module Guide - Boot Scripts](https://kernelsu.org/guide/module.html#boot-scripts)
 
 ## Available Distro
 - Alpine Linux, Installed on /data/alpine
