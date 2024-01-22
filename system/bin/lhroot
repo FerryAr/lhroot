@@ -455,20 +455,22 @@ remove_chroot () {
             killlinux
 	    if [ "$(mountpoint $lmount/dev 2> /dev/null | grep 'is a')" ]; then
 	    	echo "/dev is still mounted, please reboot your device."
-		sleep 1
-		echo "After reboot you can rerun this script or remove chroot yourself with 'rm -rf /data/<chroot folder> command'"
-		exit 1;
+		    sleep 1
+		    echo "After reboot you can rerun this script or remove chroot yourself with 'rm -rf /data/<chroot folder> command'"
+		    exit 1;
 	    else
-		echo "Check if any mountpoint is still mounted on chroot folder."
-		sleep 1;
-		echo "I give you 30 seconds to think twice before removing chroot folder."
-		sleep 1;
-		echo "To ensure that all mountpoint is unmounted, I recommend you to reboot your device."
-		sleep 1;
-		echo "After reboot you can rerun this script or remove chroot yourself with 'rm -rf /data/<chroot folder> command'"
-		sleep 30;
-		rm -rf $lmount
-		echo "Chroot removed"
+		    echo "Check if any mountpoint is still mounted on chroot folder."
+		    sleep 1;
+		    echo "I give you 30 seconds to think twice before removing chroot folder."
+		    sleep 1;
+		    echo "To ensure that all mountpoint is unmounted, I recommend you to reboot your device."
+		    sleep 1;
+		    echo "After reboot you can rerun this script or remove chroot yourself with 'rm -rf /data/<chroot folder> command'"
+            sleep 1;
+            echo "Advise to try pressing Ctrl + C (if using physical keyboard) or Tap Ctrl and C to stop in this session so you can do it with more time to check if theres any mounted on chroot folder" # This is added because to advise 'someone' to quickly follow the instruction and luckily narrowed-ly avoided the #21, although, a better dialog option would be better tbh to really confirm
+		    sleep 30;
+		    rm -rf $lmount
+		    echo "Chroot removed"
 	    fi
         else
             echo "No chroot installed"
