@@ -467,7 +467,7 @@ remove_chroot () {
 		    sleep 1;
 		    echo "After reboot you can rerun this script or remove chroot yourself with 'rm -rf /data/<chroot folder> command'"
             sleep 1;
-            echo "Advise to try pressing Ctrl + C in this session so you can do it with more time" # This is added because to advise 'someone' to quickly follow the instruction and luckily narrowed-ly avoided the #21, although, a better dialog option would be better tbh to really confirm
+            echo "Advise to try pressing Ctrl + C (if using physical keyboard) or Tap Ctrl and C to stop in this session so you can do it with more time to check if theres any mounted on chroot folder" # This is added because to advise 'someone' to quickly follow the instruction and luckily narrowed-ly avoided the #21, although, a better dialog option would be better tbh to really confirm
 		    sleep 30;
 		    rm -rf $lmount
 		    echo "Chroot removed"
